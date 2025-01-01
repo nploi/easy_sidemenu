@@ -50,6 +50,8 @@ class SideMenu extends StatefulWidget {
   /// Width when will our open menu collapse into the compact one
   final int? collapseWidth;
 
+  final Widget? leading;
+
   /// ### Easy Sidemenu widget
   ///
   /// Sidemenu is a menu that is usually located
@@ -66,6 +68,7 @@ class SideMenu extends StatefulWidget {
     this.displayModeToggleDuration,
     this.alwaysShowFooter = false,
     this.collapseWidth = 600,
+    this.leading,
   }) : super(key: key) {
     global.style = style ?? SideMenuStyle();
     global.controller = controller;
@@ -99,6 +102,8 @@ class SideMenu extends StatefulWidget {
           icon: data.icon,
           index: sideMenuExpansionItemIndex,
           iconWidget: data.iconWidget,
+          expansionIcon: data.expansionIcon,
+          unexpandedIcon: data.unexpandedIcon,
           onTap: data.onTap,
           children: data.children
               .map((childData) => SideMenuItemWithGlobal(
@@ -115,6 +120,8 @@ class SideMenu extends StatefulWidget {
                   ))
               .toList(),
         );
+      } else if (data is Widget) {
+        return data;
       }
     }).toList();
     global.items = sidemenuitems.items;
@@ -288,7 +295,14 @@ class _SideMenuState extends State<SideMenu> {
                         const SizedBox(
                           height: 42,
                         ),
-                      if (widget.title != null) widget.title!,
+                      if (widget.title != null &&
+                          widget.global.style.displayMode !=
+                              SideMenuDisplayMode.compact) ...[
+                        ListTile(
+                          leading: widget.leading,
+                          title: widget.title,
+                        )
+                      ],
                       ...widget.sidemenuitems.items,
                     ],
                   ),
@@ -308,9 +322,9 @@ class _SideMenuState extends State<SideMenu> {
                     padding: EdgeInsets.symmetric(
                       horizontal: widget.global.displayModeState.value ==
                               SideMenuDisplayMode.open
-                          ? 0
-                          : 4,
-                      vertical: 0,
+                          ? 4
+                          : 8,
+                      vertical: 8,
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
